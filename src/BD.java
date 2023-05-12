@@ -8,7 +8,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 
 public class BD {
-    public static String connecteur = "./mysql-connector-java.jar";
+    public static String connecteur = "src/mysql-connector-java.jar";
     private static int init = init();
     static HashMap<Integer, Connection> connexions = new HashMap();
     static HashMap<Integer, ResultSet> resultats = new HashMap();
