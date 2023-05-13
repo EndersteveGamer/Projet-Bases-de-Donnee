@@ -22,7 +22,7 @@ public class Application {
 
         menuPrincipal();
     }
-    // Menu Principal dans lequel l'urilisateur choisit l'action désirée
+    // Menu Principal dans lequel l'utilisateur choisit l'action désirée
     public static void menuPrincipal() {
         Scanner sc = new Scanner(System.in);
         boolean continuer = true;
@@ -53,33 +53,33 @@ public class Application {
                 }
                 if (num > 6) num = -1;
 
-                // selectionne l'action choisit.
+                // Sélectionne l'action choisie
                 switch (num) {
-                    // ajoute un client.
+                    // Ajoute un client
                     case 1 -> ajouterClient();
-                    // permet de voir les commandes d'un client.
+                    // Permet de voir les commandes d'un client
                     case 2 -> commandesClient();
-                    // permet d'ajouter une commande.
+                    // Permet d'ajouter une commande
                     case 3 -> ajouterCommande();
-                    // permet de renseigner l'utilisateur sur le nombre de Melange a faire pour la semaine prochaine.
+                    // Permet de renseigner l'utilisateur sur le nombre de mélanges à faire pour la semaine prochaine
                     case 4 -> productionMelange();
-                    // permet de se renseigner sur le montant mensuelles des factures d'un client.
+                    // Permet de se renseigner sur le montant mensuel des factures d'un client
                     case 5 -> facturesMensuelles();
-                    // permet de quitter
+                    // Permet de quitter l'application
                     case 6 -> continuer = false;
                 }
             }
         }
 
-        // déconnection de la base de données
+        // Déconnection de la base de données
         BD.fermerConnexion(connection);
     }
 
-    // La fonction ci dessous permet au partrons d'ajouter un client.
+    // La fonction ci dessous permet au patron d'ajouter un client
     public static void ajouterClient() {
         Scanner sc = new Scanner(System.in);
 
-        // L'utilisateur reseigne le nom, l'adresse ainsi que la ville du client
+        // L'utilisateur renseigne le nom, l'adresse ainsi que la ville du client
         System.out.println("Entrez le nom du client");
         String nomClient = sc.nextLine();
 
@@ -95,18 +95,19 @@ public class Application {
                 "VALUES " +
                 "('" + nomClient + "', '" + adresseClient + "', '" + villeClient + "')";
 
-        // exécution de la requête.
+        // Exécution de la requête
         BD.executerUpdate(connection, requete);
     }
 
-    // La fonction ci dessous permet de voir les commandes d'un client.
+    // La fonction ci dessous permet de voir les commandes d'un client
     public static void commandesClient() {
         Scanner sc = new Scanner(System.in);
 
         ArrayList<Integer> clients = new ArrayList<>();
         ArrayList<String> noms = new ArrayList<>();
 
-        // exécution de la requête permettant de selectionner le nom et l'ID d'un client ayant une commande.
+        // Exécution de la requête permettant de sélectionner le nom et l'ID d'un client ayant efectué au moins une commande
+        // Cette requête servira à faire en sorte que l'utilisateur ne puisse pas voir les commandes d'un client qui n'aurait effectué aucune commande
         int res = BD.executerSelect(connection, "SELECT DISTINCT LIVRER.IDCli, CLIENTE.NomCli FROM LIVRER " +
                 "INNER JOIN CLIENTE ON LIVRER.IDCli = CLIENTE.IDCli");
 
@@ -119,7 +120,7 @@ public class Application {
         int numClient = -1;
 
         do {
-            // ci dessous l'utilisateur renseigne l'id d'un client jusqu'à ce que l'id renseigner appartient à un client.
+            // Ci dessous l'utilisateur renseigne l'id d'un client jusqu'à ce que l'id renseignée appartienne à un client
             System.out.println("Entrez le client dont vous voulez voir les commandes");
             System.out.print("Valeurs possibles: ");
             for (int i = 0; i < clients.size(); i++) {
@@ -140,27 +141,28 @@ public class Application {
             if (!clients.contains(numClient)) System.out.println("Ce client n'a pas commandé de pain!");
         } while (!clients.contains(numClient));
 
-        // la requête ci dessous permet de voir les commande du client selectionner ("numClient").
+        // La requête ci dessous permet de récupérer les commande du client sélectionné ("numClient")
         String requete = "SELECT * FROM LIVRER NATURAL JOIN PAIN " +
                 "WHERE LIVRER.IDCli = " + numClient;
 
-        // exécution de la requête.
+        // Exécution de la requête.
         res = BD.executerSelect(connection, requete);
 
+        // Affichage du résultat
         while (BD.suivant(res)) {
             System.out.println("Commande du " + Date.formatSQLDate(BD.attributString(res, "LIVRER.DateLivraison")) + ": " +
                     "Pain " + BD.attributString(res, "PAIN.DescPain") + " x" + BD.attributInt(res, "LIVRER.NombreDePains") + "\n");
         }
     }
 
-    // La fonction ci dessous permet d'ajouter une commandes a un client.
+    // La fonction ci-dessous permet d'ajouter une commande à un client
     public static void ajouterCommande() {
         Scanner sc = new Scanner(System.in);
 
         ArrayList<Integer> clients = new ArrayList<>();
         ArrayList<String> noms = new ArrayList<>();
 
-        //cette requête permet d'obtenir' l'id et le nom de chaque client.
+        // Cette requête permet d'obtenir l'id et le nom de chaque client
         int res = BD.executerSelect(connection, "SELECT DISTINCT CLIENTE.IDCli, CLIENTE.NomCli FROM CLIENTE");
 
         while (BD.suivant(res)) {
@@ -170,7 +172,7 @@ public class Application {
 
         String answer;
         int numClient = -1;
-        // cette partie permet a l'utilisateur de saissir un id de client.
+        // Cette partie permet à l'utilisateur de saisir un id de client
         do {
             System.out.println("Entrez le client ayant effectué une commande");
             System.out.print("Valeurs possibles: ");
@@ -194,7 +196,8 @@ public class Application {
         ArrayList<Integer> pains = new ArrayList<>();
         ArrayList<String> descPains = new ArrayList<>();
 
-        //cette requête permet de reseigner l'id ainsi que la description de chaque pain de la boulangerie enregistré dans la base de données.
+        // Cette requête permet de récupérer les différents pains ainsi que leur description, afin de faire en sorte que
+        // l'utilisateur ne puisse rentrer qu'un pain qui existe
         String requete = "SELECT IDPain, DescPain FROM PAIN";
 
         res = BD.executerSelect(connection, requete);
@@ -206,13 +209,12 @@ public class Application {
 
         int pain = -1;
         String reponse;
-        // L'utilisateur saisit ici un id de pain.
+        // L'utilisateur saisit ici un id de pain
         do {
             for (int i = 0; i < pains.size(); i++) System.out.println("Pain " + pains.get(i) + ": " + descPains.get(i));
 
             reponse = sc.next();
 
-            // vérification de l'id (si celui ci est bien un id de pain).
             try {
                 pain = Integer.parseInt(reponse);
             } catch (NumberFormatException e) {
@@ -225,12 +227,11 @@ public class Application {
 
         int numPains = 0;
 
-        // permet d'enter le nombre de pain désiré.
+        // Permet de rentrer la quantité de pains désirée
         do {
             System.out.println("Entrez le nombre de pains à commander");
             reponse = sc.next();
 
-            // vérifit que la réponse soit un nombre.
             try {
                 numPains = Integer.parseInt(reponse);
             } catch (NumberFormatException e) {
@@ -244,7 +245,7 @@ public class Application {
         String date = "";
         boolean isDateValid = false;
 
-        // permet de saisir la date de livraison du pain. (et vérifit que le format soit respecter).
+        // Permet de saisir la date de livraison du pain (et vérifie que le format soit respecté)
         while (!isDateValid) {
             try {
                 date = Date.entrerDate("Entrez la date de livraison au format jj/mm/aaaa");
@@ -254,9 +255,10 @@ public class Application {
             }
         }
 
-        // cré et exécute la requête permettant de passer une commande.
-        // si l'utilisateur a déjà passer une commande avec le même type de pain et a la même date alors le nombre de pain des deux commande sera additionner
-        // il ne restera donc plus que une seul commande.
+        // Crée et exécute la requête permettant de passer une commande
+        // Si l'utilisateur a déjà passé une commande avec le même type de pain à la même date alors le nombre de pain des deux commandes sera additionné
+        // Il ne restera donc plus qu'une seul commande
+        // Sinon, la commande est crée
         boolean isAdding = false;
         requete = "SELECT IDCli, IDPain, DateLivraison FROM LIVRER" +
                 " WHERE IDCLI = " + numClient + " AND IDPain = " + pain + " AND DateLivraison = '" + date + "'";
@@ -276,13 +278,14 @@ public class Application {
         System.out.println("La commande a été ajoutée avec succès!");
     }
 
-    // La fonction ci dessous permet de renseigner l'utilisateur sur le nombre de Melange a faire pour la semaine prochaine.
+    // La fonction ci-dessous permet de renseigner l'utilisateur sur le nombre de mélanges à produire pour la semaine prochaine
     public static void productionMelange() {
         ArrayList<Integer> idMelange = new ArrayList<>();
         ArrayList<Integer> quantiteMelange = new ArrayList<>();
         ArrayList<java.util.Date> dates = new ArrayList<>();
         HashMap<Integer, Integer> melangesAPreparer = new HashMap<>();
 
+        // Récupère toutes les commandes passées
         String requete = "SELECT PAIN.IDMelange, LIVRER.DateLivraison, LIVRER.NombreDePains FROM LIVRER NATURAL JOIN PAIN";
 
         int res = BD.executerSelect(connection, requete);
@@ -298,6 +301,7 @@ public class Application {
             }
         }
 
+        // Ne récupère que les mélanges de la semaine prochaine
         for (int i = 0; i < idMelange.size(); i++) {
             if (dates.get(i).before(new java.util.Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000))) {
                 if (!melangesAPreparer.containsKey(idMelange.get(i))) {
@@ -311,6 +315,7 @@ public class Application {
 
         HashMap<Integer, String> descriptionMelanges = new HashMap<>();
 
+        // Récupère les descriptions des mélanges
         requete = "SELECT * FROM MELANGE";
         res = BD.executerSelect(connection, requete);
 
@@ -321,7 +326,7 @@ public class Application {
             );
         }
 
-        // affiche l'id du mélange ainsi que ça description et le nombre de fois a le préparer.
+        // Affiche l'id du mélange ainsi que sa description et le nombre de fois dont il faut le préparer
         for (int melange : melangesAPreparer.keySet()) {
             System.out.println("Mélange numéro " + melange + ":");
             System.out.println("Description: " + descriptionMelanges.get(melange));
@@ -329,14 +334,14 @@ public class Application {
         }
     }
 
-    // La fonction ci dessous permet de se renseigner sur le montant mensuelles des factures d'un client.
+    // La fonction ci dessous permet de se renseigner sur le montant mensuel des factures d'un client
     public static void facturesMensuelles() {
         Scanner sc = new Scanner(System.in);
 
         ArrayList<Integer> clients = new ArrayList<>();
         ArrayList<String> noms = new ArrayList<>();
 
-        // cette requête permet de selectionner id et le nom de tout les client ayant une commande.
+        // Cette requête permet de sélectionner l'id et le nom de tous les clients ayant passé une commande
         int res = BD.executerSelect(connection, "SELECT DISTINCT LIVRER.IDCli, CLIENTE.NomCli FROM LIVRER " +
                 "INNER JOIN CLIENTE ON LIVRER.IDCli = CLIENTE.IDCli");
 
@@ -349,7 +354,7 @@ public class Application {
         int numClient = -1;
 
         do {
-            // permet de saisir un des client ayant une commande.
+            // Permet de saisir un des client ayant passé une commande
             System.out.println("Entrez le client dont vous voulez voir les commandes");
             System.out.print("Valeurs possibles: ");
             for (int i = 0; i < clients.size(); i++) {
@@ -360,7 +365,6 @@ public class Application {
 
             answer = sc.next();
 
-            // vérifit que le numéro saisit soit dans la liste des client de la base de données.
             try {
                 numClient = Integer.parseInt(answer);
             } catch (NumberFormatException e) {
@@ -373,24 +377,27 @@ public class Application {
 
         double somme = 0;
 
-        // cette requête selectionne le prix ainsi que le nombre de pain désiré par le client.
+        // Cette requête récupère le prix ainsi que le nombre de pains commandé par le client
         String requete = "SELECT PAIN.PrixPainHT, LIVRER.NombreDePains FROM LIVRER NATURAL JOIN PAIN WHERE IDCli = " +
                 numClient;
 
         res = BD.executerSelect(connection, requete);
 
+        // Calcule la somme des prix des commandes du client
         while (BD.suivant(res)) {
             somme += Double.parseDouble(BD.attributString(res, "PAIN.PrixPainHT")) * BD.attributInt(res, "LIVRER.NombreDePains");
         }
-        // afiiche le montant de la facture HT, la TVA, ainsi que le total. 
+
+        // Affiche le montant de la facture HT, la TVA, ainsi que le total
         System.out.println("La facture mensuelle de ce client s'élève à:");
         System.out.println(somme + " HT");
         System.out.println("+" + MathUtils.round(somme * .055, 2) + " de TVA");
         System.out.println("Total: " + MathUtils.round(somme * 1.055, 2));
     }
 
-    // cette classe permet de renseigner ainsi que de saisir des dates.
+    // Cette classe permet de renseigner ainsi que de saisir des dates
     public static class Date {
+        // Formatte une date donnée au format SQL en date formattée en jour nomdumois année
         public static String formatSQLDate(String date) {
             int jour = Integer.parseInt(date.substring(8));
             int mois = Integer.parseInt(date.substring(5, 7));
@@ -399,7 +406,7 @@ public class Application {
             return jour + " " + formatMois(mois) + " " + annee;
         }
 
-        // convertie le nombre du mois en le nom du mois.
+        // Convertit un numéro de mois en nom du mois
         private static String formatMois(int mois) {
             return switch (mois) {
                 case 1 -> "janvier";
@@ -417,7 +424,7 @@ public class Application {
             };
         }
 
-        // cette méthode permet de saisir une date.
+        // Cette méthode permet de saisir une date
         public static String entrerDate(String prompt) throws ParseException {
             Scanner sc = new Scanner(System.in);
 
@@ -431,7 +438,7 @@ public class Application {
         }
     }
 
-    // cette classe permet d'arrondir un nombre a virgule.
+    // Cette classe permet d'arrondir un nombre à virgule (utilisé pour arrondir la TVA)
     public static class MathUtils {
         public static double round(double number, int places) {
             if (places < 0) throw new IllegalArgumentException();
