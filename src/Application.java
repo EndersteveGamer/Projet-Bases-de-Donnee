@@ -22,6 +22,7 @@ public class Application {
 
         menuPrincipal();
     }
+
     // Menu Principal dans lequel l'utilisateur choisit l'action désirée
     public static void menuPrincipal() {
         Scanner sc = new Scanner(System.in);
@@ -75,7 +76,7 @@ public class Application {
         BD.fermerConnexion(connection);
     }
 
-    // La fonction ci dessous permet au patron d'ajouter un client
+    // La fonction ci-dessous permet au patron d'ajouter un client
     public static void ajouterClient() {
         Scanner sc = new Scanner(System.in);
 
@@ -99,7 +100,7 @@ public class Application {
         BD.executerUpdate(connection, requete);
     }
 
-    // La fonction ci dessous permet de voir les commandes d'un client
+    // La fonction ci-dessous permet de voir les commandes d'un client
     public static void commandesClient() {
         Scanner sc = new Scanner(System.in);
 
@@ -120,7 +121,7 @@ public class Application {
         int numClient = -1;
 
         do {
-            // Ci dessous l'utilisateur renseigne l'id d'un client jusqu'à ce que l'id renseignée appartienne à un client
+            // Ci-dessous l'utilisateur renseigne l'id d'un client jusqu'à ce que l'id renseignée appartienne à un client
             System.out.println("Entrez le client dont vous voulez voir les commandes");
             System.out.print("Valeurs possibles: ");
             for (int i = 0; i < clients.size(); i++) {
@@ -141,7 +142,7 @@ public class Application {
             if (!clients.contains(numClient)) System.out.println("Ce client n'a pas commandé de pain!");
         } while (!clients.contains(numClient));
 
-        // La requête ci dessous permet de récupérer les commande du client sélectionné ("numClient")
+        // La requête ci-dessous permet de récupérer les commande du client sélectionné ("numClient")
         String requete = "SELECT * FROM LIVRER NATURAL JOIN PAIN " +
                 "WHERE LIVRER.IDCli = " + numClient;
 
@@ -256,9 +257,9 @@ public class Application {
         }
 
         // Crée et exécute la requête permettant de passer une commande
-        // Si l'utilisateur a déjà passé une commande avec le même type de pain à la même date alors le nombre de pain des deux commandes sera additionné
-        // Il ne restera donc plus qu'une seul commande
-        // Sinon, la commande est crée
+        // Si l'utilisateur a déjà passé une commande avec le même type de pain à la même date alors le nombre de pains des deux commandes sera additionné.
+        // Il ne restera donc plus qu'une seule commande
+        // Sinon, la commande est créée
         boolean isAdding = false;
         requete = "SELECT IDCli, IDPain, DateLivraison FROM LIVRER" +
                 " WHERE IDCLI = " + numClient + " AND IDPain = " + pain + " AND DateLivraison = '" + date + "'";
@@ -334,7 +335,7 @@ public class Application {
         }
     }
 
-    // La fonction ci dessous permet de se renseigner sur le montant mensuel des factures d'un client
+    // La fonction ci-dessous permet de se renseigner sur le montant mensuel des factures d'un client
     public static void facturesMensuelles() {
         Scanner sc = new Scanner(System.in);
 
@@ -354,7 +355,7 @@ public class Application {
         int numClient = -1;
 
         do {
-            // Permet de saisir un des client ayant passé une commande
+            // Permet de saisir un des clients ayant passé une commande
             System.out.println("Entrez le client dont vous voulez voir les commandes");
             System.out.print("Valeurs possibles: ");
             for (int i = 0; i < clients.size(); i++) {
